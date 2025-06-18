@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Staff List</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
+    select { width: 100%; padding: 10px; font-size: 16px; margin-top: 10px; }
+    .loading, .error { color: #888; font-style: italic; }
+  </style>
+</head>
+<body>
+
+  <h2>Select Staff</h2>
+  <div id="status" class="loading">Loading staff list...</div>
+  <select id="staffList" disabled>
+    <option>Loading...</option>
+  </select>
+
+  <script>
+    const apiUrl = "https://script.google.com/macros/s/AKfycbXYZ12345/exec"; // <-- Replace with your real URL
+
+    fetch(apiUrl)
+      .then(res => {
+        if (!res.ok) throw new Error("Unauthorized or no access.");
+        return res.json();
+      })
+      .then(data => {
+        if (data.error) throw new Error(data.error);
+
+        const staffList = document.getElementById("staffList");
+        staffList.innerHTML = "";
+        staffList.disabled = false;
+
+        const defaultOption = document.createElement("option");
+        defaultOption.textContent = "Entered By";
+        defaultOption.disabled = true;
+        defaultOption.selected = true;
+        staffList.appendChild(defaultOption);
+
+        data.values.forEach(row => {
+          const option = document.createElement("option");
+          option.value = row[0];
+          option.textContent = row[0];
+          staffList.appendChild(option);
+        });
+
+        document.getElementById("status").style.display = "none";
+      })
+      .catch(err => {
+        document.getElementById("status").className = "error";
+        document.getElementById("status").textContent = "Access denied or you are not logged into a Google Account.";
+        console.error(err);
+      });
+  </script>
+
+</body>
+</html>
